@@ -1,9 +1,9 @@
 # OysterStone
 
-[![license](https://img.shields.io/github/license/oysterstone/landing.svg)](https://github.com/oysterstone/landing/blob/master/LICENSE)
-[![Generic badge](https://img.shields.io/badge/https://-oysterstone.com-PURPLE)](https://oysterstone.com)
+[![license](https://img.shields.io/github/license/stone-oyster/landing.svg)](https://github.com/stone-oyster/landing/blob/master/LICENSE)
+[![Generic badge](https://img.shields.io/badge/https://-stoneoyster.ca-PURPLE)](https://stoneoyster.ca)
 
-This repository contains all assets related to OysterStone's landing page.
+This repository contains all assets related to StoneOyster's landing page.
 
 ## Contents
 
