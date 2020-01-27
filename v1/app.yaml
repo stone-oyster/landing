@@ -3,12 +3,12 @@ runtime: nodejs10
 handlers:
 
 - url: /
-  static_files: static/index.html
-  upload: static/index.html
+  static_files: src/index.html
+  upload: src/index.html
   secure: always
   redirect_http_response_code: 301
 
 - url: /
-  static_dir: static
+  static_dir: src
   secure: always
   redirect_http_response_code: 301
