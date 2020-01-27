@@ -1,10 +1,15 @@
 package form
 
 import (
-	"fmt"
+	"context"
+	"log"
 	"net/http"
+	"strings"
+	"time"
 
+	"cloud.google.com/go/bigquery"
 	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 )
 
 // Service holds the service configuration
@@ -27,16 +32,49 @@ func NewFormService() *Service {
 
 func formHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(errors.Wrap(err, "error parsing form"))
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
-	name := r.Form["name"]
-	email := r.Form["email"]
-	message := r.Form["message"]
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, "stoneoyster")
+	if err != nil {
+		log.Println(errors.Wrap(err, "error getting client"))
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	u := client.Dataset("landing_page_messages").Table("people").Uploader()
+	err = u.Put(ctx, &bigquery.StructSaver{
+		Struct: &User{
+			Name:       strings.Join(r.Form["name"], ""),
+			Email:      strings.Join(r.Form["email"], ""),
+			Subscribed: contains(r.Form["subscribe"], "yes"),
+			Messages: []Message{
+				// TODO: append to this
+				{
+					Data:      strings.Join(r.Form["message"], ""),
+					Timestamp: time.Now(),
+				},
+			},
+		},
+		Schema: schema,
+	})
+	if err != nil {
+		log.Println(errors.Wrap(err, "error uploading to messages"))
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(fmt.Sprintf("name: %s, email: %s, message: %s", name, email, message)))
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 	return
+}
+
+func contains(slice []string, item string) bool {
+	set := make(map[string]struct{}, len(slice))
+	for _, s := range slice {
+		set[s] = struct{}{}
+	}
+	_, ok := set[item]
+	return ok
 }
