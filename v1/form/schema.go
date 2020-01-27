@@ -62,7 +62,7 @@ type Message struct {
 var schema = bigquery.Schema{
 	&bigquery.FieldSchema{Name: "Email", Type: bigquery.StringFieldType},
 	&bigquery.FieldSchema{Name: "Name", Type: bigquery.StringFieldType},
-	&bigquery.FieldSchema{Name: "Subcribed", Type: bigquery.BooleanFieldType},
+	&bigquery.FieldSchema{Name: "Subscribed", Type: bigquery.BooleanFieldType},
 	&bigquery.FieldSchema{Name: "Messages", Type: bigquery.RecordFieldType,
 		Repeated: true,
 		Schema: bigquery.Schema{
