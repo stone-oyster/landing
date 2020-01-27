@@ -1,4 +1,4 @@
-runtime: nodejs10
+runtime: go113
 
 handlers:
 
@@ -7,6 +7,11 @@ handlers:
   upload: src/index.html
   secure: always
   redirect_http_response_code: 301
+
+- url: /submit
+  secure: always
+  redirect_http_response_code: 301
+  script: auto
 
 - url: /
   static_dir: src
