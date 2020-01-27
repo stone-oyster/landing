@@ -37,6 +37,19 @@ func formHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user := &User{
+		Name:       strings.Join(r.Form["name"], ""),
+		Email:      strings.Join(r.Form["email"], ""),
+		Subscribed: contains(r.Form["subscribe"], "yes"),
+		Messages: []Message{
+			// TODO: append to this
+			{
+				Data:      strings.Join(r.Form["message"], ""),
+				Timestamp: time.Now(),
+			},
+		},
+	}
+
 	ctx := context.Background()
 	client, err := bigquery.NewClient(ctx, "stoneoyster")
 	if err != nil {
@@ -46,18 +59,7 @@ func formHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	u := client.Dataset("landing_page_messages").Table("people").Uploader()
 	err = u.Put(ctx, &bigquery.StructSaver{
-		Struct: &User{
-			Name:       strings.Join(r.Form["name"], ""),
-			Email:      strings.Join(r.Form["email"], ""),
-			Subscribed: contains(r.Form["subscribe"], "yes"),
-			Messages: []Message{
-				// TODO: append to this
-				{
-					Data:      strings.Join(r.Form["message"], ""),
-					Timestamp: time.Now(),
-				},
-			},
-		},
+		Struct: user,
 		Schema: schema,
 	})
 	if err != nil {
