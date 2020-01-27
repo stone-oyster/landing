@@ -13,8 +13,9 @@ import (
 // Service holds the service configuration
 // necessary for endpoints to respond to requests
 type Service struct {
-	Router   *mux.Router
-	BQClient *bigquery.Client
+	Router          *mux.Router
+	BQClient        *bigquery.Client
+	SlackWebhookURL string
 }
 
 // NewFormService returns an HTTP router multiplexer with
@@ -29,8 +30,9 @@ func NewFormService() *Service {
 	}
 
 	svc := &Service{
-		Router:   mux.NewRouter(),
-		BQClient: bq,
+		Router:          mux.NewRouter(),
+		BQClient:        bq,
+		SlackWebhookURL: "", // Secret - do not commit
 	}
 
 	svc.Router.Methods(http.MethodPost).Path("/submit").HandlerFunc(svc.formHandler)

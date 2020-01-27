@@ -2,10 +2,12 @@ package form
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 
 	"cloud.google.com/go/bigquery"
+	"github.com/nlopes/slack"
 	"github.com/pkg/errors"
 )
 
@@ -25,6 +27,19 @@ func (svc *Service) formHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(errors.Wrap(err, "error uploading to messages"))
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
+	}
+
+	if svc.SlackWebhookURL != "" {
+		msg := slack.WebhookMessage{
+			Text: fmt.Sprintf(
+				"new message from %s (%s - subscribed = %v): \"%s\"",
+				user.Name,
+				user.Email,
+				user.Subscribed,
+				user.Messages[0].Data,
+			),
+		}
+		slack.PostWebhook(svc.SlackWebhookURL, &msg)
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
